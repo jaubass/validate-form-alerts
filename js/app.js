@@ -1,31 +1,64 @@
 // Espera a que se cargue el DOM antes de ejecutar el código
 document.addEventListener('DOMContentLoaded', function() {
 
+    const email = {
+        nombre: '',
+        email: '',
+        asunto: '',
+        mensaje: ''
+    }
+
     // Seleccionar los elementos de la interfaz
     const inputEmail = document.querySelector('#email');        // Selecciona el input con el id 'email'
     const inputAsunto = document.querySelector('#asunto');      // Selecciona el input con el id 'asunto'
     const inputNombre = document.querySelector('#nombre');    // Selecciona el input con el id 'mensaje'
     const inputMensaje = document.querySelector('#mensaje');    // Selecciona el input con el id 'mensaje'
     const formulario = document.querySelector('#formulario');   // Selecionamos el formulario
+    const btnSubmit = document.querySelector('#formulario button[type="submit"]')
+    const btnReset = document.querySelector('#formulario button[type="reset"]')
+
 
     // Asignar Eventos
-    inputEmail.addEventListener('blur', validarForm);           // Agrega un evento blur al inputEmail que llamará a la función validarForm
-    inputAsunto.addEventListener('blur', validarForm);          // Agrega un evento blur al inputAsunto que llamará a la función validarForm
-    inputMensaje.addEventListener('blur', validarForm);         // Agrega un evento blur al inputMensaje que llamará a la función validarForm
-    inputNombre.addEventListener('blur', validarForm);          // Agrega un evento blur al inputMensaje que llamará a la función validarForm
+    inputEmail.addEventListener('input', validarForm);           // Agrega un evento input al inputEmail que llamará a la función validarForm
+    inputAsunto.addEventListener('input', validarForm);          // Agrega un evento input al inputAsunto que llamará a la función validarForm
+    inputMensaje.addEventListener('input', validarForm);         // Agrega un evento input al inputMensaje que llamará a la función validarForm
+    inputNombre.addEventListener('input', validarForm);          // Agrega un evento input al inputMensaje que llamará a la función validarForm
 
-    // Definición de la función validarForm que se llamará cuando ocurra el evento blur
+    btnReset.addEventListener('click', function(e){
+        e.preventDefault();
+
+        email.nombre = '';
+        email.email = '';
+        email.asunto = '';
+        email.mensaje = '';
+
+        formulario.reset();
+        comprobarEmail();
+    })
+
+    // Definición de la función validarForm que se llamará cuando ocurra el evento input
     function validarForm(e) {
-        console.log(e.target.parentElement);                    // Podemos utilizar mas de un parentElement.
+        // console.log(e.target.parentElement);                 // Podemos utilizar mas de un parentElement.
         if (e.target.value.trim() === '') {                     // Verifica si el valor del elemento que disparó el evento está vacío (trim elimina espacios en blanco)
-             mostrarAlerta (`El campo ${e.target.id} es obligatorio`, e.target.parentElement); // Si está vacío, imprime mostrarAlerta
+            mostrarAlerta (`El campo ${e.target.id} es obligatorio`, e.target.parentElement); // Si está vacío, imprime mostrarAlerta
+            email[e.target.name] = '';
+            comprobarEmail();
              return;
         } 
-        if (!validarMail(e.target.value)) {
+        if (e.target.id === 'email' && !validarMail(e.target.value)) {
             mostrarAlerta('El email no es valido', e.target.parentElement)
+            email[e.target.name] = '';
+            comprobarEmail();
             return;
         }
         limpiarAlerta(e.target.parentElement);
+
+        // Asignar los valores
+        email[e.target.name] = e.target.value.trim().toLowerCase();
+        console.log(email)
+        // Comprobar el objeto
+
+        comprobarEmail();
     }
 
 
@@ -51,5 +84,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const regex =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/
         const resultado = regex.test(email)
         return resultado;
+    }
+
+    function comprobarEmail() {
+        if(Object.values(email).includes('')) {
+            btnSubmit.classList.add('opacity-50');
+            btnSubmit.disabled = true;
+        } else {
+            btnSubmit.classList.remove('opacity-50');
+            btnSubmit.disabled = false;
+        }
     }
 });
