@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const formulario = document.querySelector('#formulario');   // Selecionamos el formulario
     const btnSubmit = document.querySelector('#formulario button[type="submit"]')
     const btnReset = document.querySelector('#formulario button[type="reset"]')
+    const spinner = this.querySelector('#spinner')
 
 
     // Asignar Eventos
@@ -24,17 +25,36 @@ document.addEventListener('DOMContentLoaded', function() {
     inputMensaje.addEventListener('input', validarForm);         // Agrega un evento input al inputMensaje que llamará a la función validarForm
     inputNombre.addEventListener('input', validarForm);          // Agrega un evento input al inputMensaje que llamará a la función validarForm
 
+    formulario.addEventListener('submit', enviarEmail);
+
     btnReset.addEventListener('click', function(e){
         e.preventDefault();
-
-        email.nombre = '';
-        email.email = '';
-        email.asunto = '';
-        email.mensaje = '';
-
-        formulario.reset();
-        comprobarEmail();
+        resetForm();
     })
+
+    function enviarEmail(e) {
+        e.preventDefault();
+
+        spinner.classList.add('flex');
+        spinner.classList.remove('hidden');
+
+        setTimeout(() => {
+            spinner.classList.remove('flex');
+            spinner.classList.add('hidden');
+
+            resetForm();
+
+            const mensajeExito = document.createElement('P');
+            mensajeExito.classList.add('bg-green-500', 'text-white', 'p-2', 'text-center', 'rounded-lg', 'mt-10', 'font-bold', 'text-sm', 'uppercase');
+            mensajeExito.textContent = 'Mensaje enviando correctamente'
+            formulario.appendChild(mensajeExito);
+            setTimeout(() => {
+                mensajeExito.remove();
+            }, 3000);
+
+
+        }, 3000);
+    }
 
     // Definición de la función validarForm que se llamará cuando ocurra el evento input
     function validarForm(e) {
@@ -94,5 +114,15 @@ document.addEventListener('DOMContentLoaded', function() {
             btnSubmit.classList.remove('opacity-50');
             btnSubmit.disabled = false;
         }
+    }
+
+    function resetForm() {
+        email.nombre = '';
+        email.email = '';
+        email.asunto = '';
+        email.mensaje = '';
+
+        formulario.reset();
+        comprobarEmail();
     }
 });
